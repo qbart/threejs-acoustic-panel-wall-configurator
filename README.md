@@ -2,6 +2,13 @@
 
 ![Example](g/image.png)
 
+#### Shortcuts
+
+```
+f - increase depth by 1
+d - decrease depth by 1
+c - toggle color (only if depth > 0)
+```
 
 #### JSON
 
