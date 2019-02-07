@@ -11,7 +11,7 @@ var YN = 30,
   Z_DEPTH_STEP = 0.4;
 
 var WIDTH = window.innerWidth,
-  HEIGHT = window.innerHeight - 20;
+  HEIGHT = window.innerHeight - 200;
 
 function getMousePos(event) {
   var v = new THREE.Vector2();
@@ -48,6 +48,56 @@ function onKeyDown(event) {
   }
 }
 
+function calculateStats() {
+  var total = 0;
+  // 1,2,3 depths => 1,2 colors
+  var colorByDepthCount = {
+    1: {
+      1: 0,
+      2: 0
+    },
+    2: {
+      1: 0,
+      2: 0
+    },
+    3: {
+      1: 0,
+      2: 0
+    }
+  };
+  for (var i = 0; i < depths.length; i++) {
+    if (depths[i] > 0) {
+      colorByDepthCount[depths[i]][colors[i]] += 1;
+      total += 1;
+    }
+  }
+
+  var s = "<table>";
+  s += "<tr>";
+  s += "<td cellspan='2'>";
+  s += " Total: " + total + "<br>";
+  s += " Estimated cost: " + total * 2.5 + " zł";
+  s += "</td>";
+  s += "</tr>";
+  s += "<tr>";
+  s += "<td>";
+  s += "Silver: <br>";
+  s += " - 1 lvl: <strong>" + colorByDepthCount[1][SILVER] + "</strong><br>";
+  s += " - 2 lvl: <strong>" + colorByDepthCount[2][SILVER] + "</strong><br>";
+  s += " - 3 lvl: <strong>" + colorByDepthCount[3][SILVER] + "</strong><br>";
+  s += "</td><td>";
+  s += "Black: <br>";
+  s += " - 1 lvl: <strong>" + colorByDepthCount[1][BLACK] + "</strong><br>";
+  s += " - 2 lvl: <strong>" + colorByDepthCount[2][BLACK] + "</strong><br>";
+  s += " - 3 lvl: <strong>" + colorByDepthCount[3][BLACK] + "</strong><br>";
+  s += "</td>";
+  s += "</tr>";
+  s += "</table>"
+
+  if (console && console.log) console.log(colorByDepthCount);
+  document.getElementById("stats").innerHTML = s;
+}
+
 function updateColor(index) {
   switch (colors[index]) {
     case SILVER:
@@ -74,6 +124,8 @@ function save() {
   };
 
   navigator.clipboard.writeText(JSON.stringify(data));
+
+  calculateStats();
 }
 
 function load(data) {
@@ -84,6 +136,8 @@ function load(data) {
     updateBoxZ(i);
     updateColor(i);
   }
+
+  calculateStats();
 }
 
 function toggleColor() {
@@ -138,7 +192,7 @@ function init() {
 
   // Create a camera, zoom it out from the model a bit, and add it to the scene.
   camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 0.1, 1000);
-  camera.position.set(0, 0, 45);
+  camera.position.set(0, 0, 64);
   scene.add(camera);
 
   var spotLight = new THREE.SpotLight(0xffffff);
